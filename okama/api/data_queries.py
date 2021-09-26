@@ -62,7 +62,15 @@ class QueryData:
         csv_input = API.get_ror(
             symbol=symbol, first_date=first_date, last_date=last_date, period=period
         )
-        return QueryData.csv_to_series(csv_input, period)
+        ser = QueryData.csv_to_series(csv_input, period)
+        mn = ser.index.min().to_timestamp()
+        mx = ser.index.max().to_timestamp()
+        
+        index_ = pd.period_range( mn, mx, freq=period,)
+        #ser.index = index_
+        ser=ser.reindex(index_)
+        ser.fillna(inplace=True,value=0)
+        return ser #QueryData.csv_to_series(csv_input, period)
 
     @staticmethod
     def get_nav(
